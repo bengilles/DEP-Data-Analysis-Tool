@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { MappingComponent } from './mapping/mapping.component';
 import { EsriMapComponent } from './esri-map/esri-map.component';
 import { EsriLoaderService } from 'angular2-esri-loader';
+import { MappingService } from './services/mapping.service'; 
 
 @NgModule({
   declarations: [
@@ -15,7 +16,7 @@ import { EsriLoaderService } from 'angular2-esri-loader';
   imports: [
     BrowserModule
   ],
-  providers: [EsriLoaderService],
+  providers: [EsriLoaderService, MappingService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
