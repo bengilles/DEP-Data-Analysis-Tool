@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { EsriLoaderService } from 'angular2-esri-loader';
+import { MappingService } from '../services/mapping.service'; 
 
 @Component({
  selector: 'app-esri-map',
@@ -13,7 +14,7 @@ export class EsriMapComponent {
  map: any;
  mapView: any;
  
- constructor(private esriLoader: EsriLoaderService) { }
+ constructor(private esriLoader: EsriLoaderService, private mappingService: MappingService) { }
 
  ngAfterViewInit() {
   var vm = this; 
@@ -37,6 +38,10 @@ export class EsriMapComponent {
          heightBreakPoint: 'large', 
          widthBreakPoint: 'large'
        });
+
+        vm.mappingService.setMap(vm.map); 
+        vm.mappingService.setMapView(vm.mapView); 
+
      });
    });
  }

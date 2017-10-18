@@ -1,6 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-
-import { EsriLoaderService } from 'angular2-esri-loader';
+import { Component, DoCheck } from '@angular/core';
     
 @Component({
     selector: 'app-mapping',
@@ -8,7 +6,7 @@ import { EsriLoaderService } from 'angular2-esri-loader';
     styleUrls: ['./mapping.component.css']
 })
 export class MappingComponent {
-    constructor(private esriLoader: EsriLoaderService) {
+    constructor() {
         console.log('Mapping Component Initialized');
     }
 }
