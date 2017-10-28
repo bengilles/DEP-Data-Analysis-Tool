@@ -1,3 +1,15 @@
 <div>
-    Water Report Here
+    <button (click)="exportReport()">Export</button>
+    <p-dataTable [value]="waterData" [rows]="15" [paginator]="true">
+        <p-column field="monitoringLocationName" header="Monitoring Location Name" [sortable]="true"></p-column>
+        <p-column field="monitoringLocationDescription" header="Monitoring Location Description" [sortable]="true"></p-column>
+        <p-column field="monitoringLocationType" header="Monitoring Location Type" [sortable]="true"></p-column>
+        <p-column field="longitude" header="Longitude" [sortable]="true"></p-column>
+        <p-column field="latitude" header="Latitude" [sortable]="true"></p-column>
+        <p-column field="activityType" header="Activity Type" [sortable]="true"></p-column>
+        <p-column field="activityDate" header="Activity Date" [sortable]="true"></p-column>
+        <p-column field="resultMethodName" header="Result Method Name" [sortable]="true"></p-column>
+        <p-column field="resultMeasureValue" header="Result Measure Value" [sortable]="true"></p-column>
+        <p-column field="countyCode" header="County Code"></p-column>
+    </p-dataTable>
 </div>

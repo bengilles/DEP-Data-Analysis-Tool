@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http'; 
+import { DataTableModule, SharedModule } from 'primeng/primeng';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
@@ -8,6 +9,7 @@ import { MappingComponent } from './mapping/mapping.component';
 import { EsriMapComponent } from './esri-map/esri-map.component';
 import { EsriLoaderService } from 'angular2-esri-loader';
 import { MappingService } from './services/mapping.service'; 
+
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { MappingService } from './services/mapping.service';
   ],
   imports: [
     BrowserModule, 
-    HttpClientModule
+    HttpClientModule, 
+    DataTableModule, 
+    SharedModule
   ],
   providers: [EsriLoaderService, MappingService],
   bootstrap: [AppComponent]
