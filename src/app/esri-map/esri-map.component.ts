@@ -25,32 +25,66 @@ export class EsriMapComponent {
      url: '//js.arcgis.com/4.5/'
    }).then(() => {
      // load the map class needed to create a new map
-     vm.esriLoader.loadModules(['esri/Map', 'esri/views/MapView', 'esri/layers/FeatureLayer', 'esri/config']).then(([Map, MapView, FeatureLayer, esriConfig]) => {
+     vm.esriLoader.loadModules(['esri/Map', 'esri/views/MapView', 'esri/layers/FeatureLayer', 'esri/config', 'esri/widgets/Legend']).then(([Map, MapView, FeatureLayer, esriConfig, Legend]) => {
       
       esriConfig.request.corsEnabledServers.push('https://gisags104.dev.geodecisions.local:6443');
-      
-      var waterPointsUrl = 'https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/VectorData/MapServer/0'; 
+      var mapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/VectorData/MapServer/";
      
-      var waterPointsLayer = new FeatureLayer({url: waterPointsUrl});
-      
-       vm.map = new Map({ 
-         basemap: 'satellite', 
-         ground: 'world-elevation', 
-         showAttribution: false
-       });
-       
-       vm.map.add(waterPointsLayer); 
-       
-       vm.mapView = new MapView({
-         id: 'view',
-         container: 'view', 
-         map: vm.map, 
-         heightBreakPoint: 'large', 
-         widthBreakPoint: 'large'
-       });
+      var waterDataLayer = new FeatureLayer({
+        url: mapServerUrl + '0'
+      });
 
-        vm.mappingService.setMap(vm.map); 
-        vm.mappingService.setMapView(vm.mapView); 
+      var radonDataLayer = new FeatureLayer({
+        url: mapServerUrl + '5'
+      });
+      
+      vm.map = new Map({ 
+        basemap: 'satellite', 
+        ground: 'world-elevation', 
+        showAttribution: false
+      });
+      
+      vm.map.add(waterDataLayer);
+      vm.map.add(radonDataLayer);
+      
+      vm.mapView = new MapView({
+        id: 'view',
+        container: 'view', 
+        map: vm.map, 
+        heightBreakPoint: 'large', 
+        widthBreakPoint: 'large'
+      });
+
+      var legend = new Legend({
+        view: vm.mapView,
+        layerInfos: [
+          {
+            layer: waterDataLayer,
+            title: "Water Quality Data"
+          },{
+            layer: radonDataLayer,
+            title: "Radon Municipality Data"
+          }
+        ]
+      });
+
+      // Add widget to the bottom right corner of the view
+      vm.mapView.ui.add(legend, "bottom-right");
+
+      function identifyCallback(result) {
+        
+      }
+
+      function executeIdentify(point) {
+        debugger;
+      }
+
+      vm.mapView.on("click", function(event) {
+        executeIdentify(event.mapPoint);
+      });
+
+      vm.mappingService.setMap(vm.map); 
+      vm.mappingService.setMapView(vm.mapView); 
 
      });
    });
