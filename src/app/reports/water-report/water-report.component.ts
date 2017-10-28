@@ -50,4 +50,8 @@ export class WaterReportComponent implements OnInit {
            }
         });
     }
+
+    exportReport(): void {
+        
+    }
 }
