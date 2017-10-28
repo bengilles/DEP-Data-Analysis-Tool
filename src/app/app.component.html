@@ -1,3 +1,9 @@
 <div class="map">
     <app-mapping></app-mapping>
 </div>
+<div>
+    <button (click)="showWaterReport = !showWaterReport">{{showWaterReport ? 'hide' : 'showWaterReport'}}</button>
+    <div *ngIf="showWaterReport">
+        <app-water-report></app-water-report>
+    </div>
+</div>
