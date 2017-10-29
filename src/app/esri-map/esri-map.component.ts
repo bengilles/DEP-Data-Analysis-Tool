@@ -174,7 +174,7 @@ export class EsriMapComponent {
 
       function executeGeoProcessor(point) {
         geoProcessor.execute({
-          Input_Points: new FeatureSet({
+          InputPoints: new FeatureSet({
             features: [
               point
             ]
