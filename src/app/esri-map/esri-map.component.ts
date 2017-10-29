@@ -25,27 +25,32 @@ export class EsriMapComponent {
      url: '//js.arcgis.com/4.5/'
    }).then(() => {
      // load the map class needed to create a new map
-     vm.esriLoader.loadModules(['esri/Map', 'esri/views/MapView', 'esri/layers/FeatureLayer', 'esri/config', 'esri/widgets/Legend']).then(([Map, MapView, FeatureLayer, esriConfig, Legend]) => {
+     vm.esriLoader.loadModules(['esri/Basemap', 'esri/config', 'esri/geometry/Extent', 'esri/layers/FeatureLayer', 'esri/widgets/Legend', 'esri/Map', 'esri/views/MapView', 'esri/layers/TileLayer']).then(([BaseMap, esriConfig, Extent, FeatureLayer, Legend , Map, MapView, TileLayer]) => {
       
       esriConfig.request.corsEnabledServers.push('https://gisags104.dev.geodecisions.local:6443');
-      var mapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/VectorData/MapServer/";
+      var radonBaseMapUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/RadonBaseMap/MapServer/";
+      var vectorMapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/VectorData/MapServer/";
+      var radon1980MapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/MedianRadon1980s/MapServer";
      
-      var waterDataLayer = new FeatureLayer({
-        url: mapServerUrl + '0'
+      var radonBaseLayer = new TileLayer({
+          url: radonBaseMapUrl
       });
 
-      var radonDataLayer = new FeatureLayer({
-        url: mapServerUrl + '5'
+      var waterDataLayer = new FeatureLayer({
+        url: vectorMapServerUrl + '0'
       });
+
+      var radon1980Layer = new TileLayer({
+        url: radon1980MapServerUrl
+      })
       
       vm.map = new Map({ 
-        basemap: 'satellite', 
+        basemap: new BaseMap({
+          baseLayers: [radonBaseLayer]
+        }),
         ground: 'world-elevation', 
         showAttribution: false
       });
-      
-      vm.map.add(waterDataLayer);
-      vm.map.add(radonDataLayer);
       
       vm.mapView = new MapView({
         id: 'view',
@@ -55,15 +60,27 @@ export class EsriMapComponent {
         widthBreakPoint: 'large'
       });
 
+      vm.mapView.extent = new Extent({
+        xmin: -8948303.602774117,
+        xmax: -8361267.225544245,
+        ymin: 4864173.156473289,
+        ymax: 5130785.511131856,
+        spatialReference: {
+          wkid: 102100
+        }
+      });
+
+      vm.map.add(waterDataLayer);
+      vm.map.add(radon1980Layer);
+
       var legend = new Legend({
         view: vm.mapView,
-        layerInfos: [
-          {
+        layerInfos: [{
             layer: waterDataLayer,
             title: "Water Quality Data"
           },{
-            layer: radonDataLayer,
-            title: "Radon Municipality Data"
+            layer: radon1980Layer,
+            title: "Radon Municipality Data (1980-1990)"
           }
         ]
       });
