@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms'; 
 import { HttpClientModule } from '@angular/common/http'; 
 import { DataTableModule, SharedModule } from 'primeng/primeng';
 import { NgModule } from '@angular/core';
@@ -19,6 +20,7 @@ import { MappingService } from './services/mapping.service';
   ],
   imports: [
     BrowserModule, 
+    FormsModule, 
     HttpClientModule, 
     DataTableModule, 
     SharedModule
