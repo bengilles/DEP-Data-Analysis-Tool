@@ -3,26 +3,39 @@ import { DataTableModule, SharedModule } from 'primeng/primeng';
 import { HttpClient } from '@angular/common/http';
 import { MappingService } from '../../services/mapping.service'; 
 
-export interface WaterData {
-    monitoringLocationName: string; 
-    monitoringLocationDescription: string; 
-    monitoringLocationType: string; 
-    latitude: string; 
-    longitude: string; 
-    activityType: string; 
-    activityDate: string; 
-    resultMethodName: string; 
-    resultMeasureValue: string; 
+export interface RadonData {
+    radonDataIdentifier: string; 
+    addressPostalCode: string; 
     countyCode: string; 
+    countyName: string; 
+    municipalityName: string; 
+    buildingPurpose: string; 
+    buildingType: string; 
+    buildingSubType: string; 
+    testFloorLevel: string; 
+    testMethodType: string; 
+    mitigationSystem: string;
+    measureValue: string; 
+    testStartDate: string; 
+    testEndDate: string; 
 }
 
 @Component({
-selector: 'app-water-report',
-templateUrl: './water-report.component.html'
+selector: 'app-radon-report',
+templateUrl: './radon-report.component.html'
 })
-export class WaterReportComponent implements OnInit {
-    waterData: WaterData[]; 
+export class RadonReportComponent implements OnInit {
+    radonData: RadonData[]; 
     years: any[] = [
+        { year: '1989', code: '1989' },  
+        { year: '1990', code: '1990' },  
+        { year: '1991', code: '1991' },  
+        { year: '1992', code: '1992' },  
+        { year: '1993', code: '1993' },  
+        { year: '1994', code: '1994' },  
+        { year: '1995', code: '1995' },  
+        { year: '1996', code: '1996' },  
+        { year: '1997', code: '1997' },  
         { year: '1998', code: '1998' },  
         { year: '1999', code: '1999' },
         { year: '2000', code: '2000' },
@@ -113,58 +126,76 @@ export class WaterReportComponent implements OnInit {
         {county:'York', code: 67},
     ];
     selectedCounty: any = { county:'Adams', code: 1 }; 
-    selectedYear: any = { year: '1998', code: '1998' }; 
+    selectedYear: any = { year: '2017', code: '2017' }; 
+    specifiedZipcode: string = ''; 
     map: any; 
     mapView: any; 
-    selectedRow: any; 
     
-    constructor(private http: HttpClient, private mapService: MappingService) {
-        console.log('Water Report Component Initialized');
-        this.map = mapService.getMap(); 
-        this.mapView = mapService.getMapView(); 
+    constructor(private http: HttpClient, private mappingService: MappingService) {
+        console.log('Radon Report Component Initialized');
+        this.map = mappingService.getMap(); 
+        this.mapView = mappingService.getMapView();
+        console.log(this.map); 
+        console.log(this.mapView); 
     }
     
     ngOnInit(): void {
-        console.log('Water Report Initialized'); 
+        console.log('Radon Report Initialized'); 
     }
 
     generateReport(): void { 
         console.log(this.selectedCounty); 
         console.log(this.selectedYear); 
-        let whereClause = '?$where=' + 'county_code = \'' + this.selectedCounty + '\'' + ' AND ' + 'date_extract_y(activity_start_date) = ' + this.selectedYear; 
-        this.http.get('https://data.pa.gov/resource/x7jf-72k4.json' + whereClause).subscribe(data => {
-            this.waterData = []; 
+        if(this.selectedCounty < 10){
+            this.selectedCounty = '0' + this.selectedCounty; 
+        }
+        let whereClause = '';
+        if(this.specifiedZipcode.length > 0){
+            whereClause = '?$where=' + 'address_postal_code = \'' + this.specifiedZipcode + '\'' + ' AND ' + 'date_extract_y(test_start_date) = ' + this.selectedYear;
+        } else {
+            whereClause = '?$where=' + 'county_code = \'' + this.selectedCounty + '\'' + ' AND ' + 'date_extract_y(test_start_date) = ' + this.selectedYear;
+        }
+        
+        this.http.get('https://data.pa.gov/resource/7ypj-ezu6.json' + whereClause).subscribe(data => {
+            this.radonData = []; 
             let response: any; 
             response = data; 
             console.log(response); 
             for(let index = 0; index < response.length; index++) {
-                 var newWaterData: WaterData = {
-                     monitoringLocationName: response[index].monitoring_location_name, 
-                     monitoringLocationDescription: response[index].monitoring_location_description,
-                     monitoringLocationType: response[index].monitoring_location_name, 
-                     longitude: response[index].longitude, 
-                     latitude: response[index].latitude, 
-                     activityType: response[index].activity_type_code, 
-                     activityDate: response[index].activity_start_date.replace(/T00:00:00.000/g,""), 
-                     resultMethodName: response[index].result_method_name, 
-                     resultMeasureValue: response[index].result_measure_value + response[index].result_measure_unit_code, 
-                     countyCode: response[index].county_code
+                 var newRadonData: RadonData = {
+                    radonDataIdentifier : response[index].radon_data_identifier,  
+                    addressPostalCode : response[index].address_postal_code,
+                    countyCode : response[index].county_code, 
+                    countyName : response[index].county_name, 
+                    municipalityName : response[index].municpality_value, 
+                    buildingPurpose : response[index].building_purpose_code, 
+                    buildingType : response[index].building_type_code, 
+                    buildingSubType : response[index].building_subtype_code, 
+                    testFloorLevel : response[index].test_floor_level_text, 
+                    testMethodType : response[index].test_method_type_code,
+                    mitigationSystem  : response[index].mitigation_system_indicator,
+                    measureValue  : response[index].measure_value,
+                    testStartDate  : response[index].test_start_date.replace(/T00:00:00.000/g,""),
+                    testEndDate  : response[index].test_end_date.replace(/T00:00:00.000/g,""),
+                    
                  }
-                 this.waterData.push(newWaterData); 
+                 this.radonData.push(newRadonData); 
             }
          });
     }
     
     exportReport(): void {
-        let filename = 'WaterQualityReport.csv';
+        let filename = 'RadonLevelReport.csv';
 
         //Add Input Parameters to CSV Value
-        let finalValue = 'Monitoring Location Name, Monitoring Location Description, Monitoring Location Type, Longitude, Latitude, Activity Type, Activity Date, Result Method Name, Result Measure Value, County Code\n\n'; 
+        let finalValue = 'Radon Data Identifier, Address Postal Code, County Code, County Name, Municipality Name, Building Purpose, Building Type, Building Subtype, Test Floor Level, Test Method Type, Mitigation System,' + 
+         'Measure Value, Test Start Date, Test End Date + \n\n'; 
         
-        for(let index = 0; index < this.waterData.length; index++){
-            finalValue += this.waterData[index].monitoringLocationName + ',' + this.waterData[index].monitoringLocationDescription + ',' + this.waterData[index].monitoringLocationType + ',' +
-                this.waterData[index].longitude + ',' + this.waterData[index].latitude + ',' + this.waterData[index].activityType + ',' + this.waterData[index].activityDate + ',' + 
-                this.waterData[index].resultMethodName.replace(/,/g,"") + ',' + this.waterData[index].resultMeasureValue + ',' + this.waterData[index].countyCode + '\n'; 
+        for(let index = 0; index < this.radonData.length; index++){
+            finalValue += this.radonData[index].radonDataIdentifier + ',' + this.radonData[index].addressPostalCode + ',' + this.radonData[index].countyCode + ',' +
+                this.radonData[index].countyName + ',' + this.radonData[index].municipalityName + ',' + this.radonData[index].buildingPurpose + ',' + this.radonData[index].buildingType + ',' + 
+                this.radonData[index].buildingSubType + ',' + this.radonData[index].testFloorLevel + ',' + this.radonData[index].testMethodType + + this.radonData[index].mitigationSystem + ',' +
+                this.radonData[index].measureValue + ',' + this.radonData[index].testStartDate + ',' + this.radonData[index].testEndDate + '\n'; 
         }
 
         let blob = new Blob([finalValue], { type: 'text/csv;charset-utf-8;' });
