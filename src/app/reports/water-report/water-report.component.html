@@ -1,0 +1,34 @@
+<div>
+    <div class="report-controls row">
+        <div class="col-sm-3 col-md-3 col-lg-3">
+            <label>County</label>
+            <select [(ngModel)]="selectedCounty">
+                <option *ngFor="let x of counties" [selected]="x.country == 'Adams'" [value]="x.code">{{x.county}}</option>
+            </select>
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3">
+            <label>Year</label>
+            <select [(ngModel)]="selectedYear">
+                <option *ngFor="let x of years" [selected]="x.year == '2017'" [value]="x.code">{{x.year}}</option>
+            </select>
+        </div>
+        <div class="col-sm-2 col-md-2 col-lg-2">
+            <button class="btn-success" (click)="generateReport()">Generate Report</button>
+        </div>
+        <div class="col-sm-2 col-md-2 col-lg-2">
+            <button class="btn-primary" (click)="exportReport()">Export</button>
+        </div>
+    </div>
+    <p-dataTable [value]="waterData" [rows]="15" [paginator]="true">
+        <p-column field="monitoringLocationName" header="Monitoring Location Name" [sortable]="true"></p-column>
+        <p-column field="monitoringLocationDescription" header="Monitoring Location Description" [sortable]="true"></p-column>
+        <p-column field="monitoringLocationType" header="Monitoring Location Type" [sortable]="true"></p-column>
+        <p-column field="longitude" header="Longitude" [sortable]="true"></p-column>
+        <p-column field="latitude" header="Latitude" [sortable]="true"></p-column>
+        <p-column field="activityType" header="Activity Type" [sortable]="true"></p-column>
+        <p-column field="activityDate" header="Activity Date" [sortable]="true"></p-column>
+        <p-column field="resultMethodName" header="Result Method Name" [sortable]="true"></p-column>
+        <p-column field="resultMeasureValue" header="Result Measure Value" [sortable]="true"></p-column>
+        <p-column field="countyCode" header="County Code"></p-column>
+    </p-dataTable>
+</div>
