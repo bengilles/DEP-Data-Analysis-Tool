@@ -1,3 +1,6 @@
+/*# sourceMappingURL=theme.css.map */
+
+
 /* You can add global styles to this file, and also import other style files */
 
 @charset "UTF-8";
@@ -788,4 +791,26 @@ p-togglebutton.ng-dirty.ng-invalid .ui-button {
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+}
+
+div .esri-legend__layer-caption {
+    display: none;
+}
+
+div .esri-layer-list {
+    min-width: 360px;
+}
+
+.esri-layer-list__child-toggle {
+    display: none;
+}
+
+div .esri-layer-list__item-container {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 16px;
 }
