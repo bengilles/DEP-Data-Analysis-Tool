@@ -17,8 +17,7 @@ export interface WaterData {
 
 @Component({
 selector: 'app-water-report',
-templateUrl: './water-report.component.html',
-styleUrls: ['./water-report.component.css']
+templateUrl: './water-report.component.html'
 })
 export class WaterReportComponent implements OnInit {
     waterData: WaterData[]; 
@@ -120,34 +119,65 @@ export class WaterReportComponent implements OnInit {
     }
     
     ngOnInit(): void {
-        this.http.get('https://data.pa.gov/resource/x7jf-72k4.json').subscribe(data => {
-           this.waterData = []; 
-           let response: any; 
-           response = data; 
-           console.log(response); 
-           for(let index = 0; index < response.length; index++) {
-                var newWaterData: WaterData = {
-                    monitoringLocationName: response[index].monitoring_location_name, 
-                    monitoringLocationDescription: response[index].monitoring_location_description,
-                    monitoringLocationType: response[index].monitoring_location_name, 
-                    longitude: response[index].longitude, 
-                    latitude: response[index].latitude, 
-                    activityType: response[index].activity_type_code, 
-                    activityDate: response[index].activity_start_date, 
-                    resultMethodName: response[index].result_method_name, 
-                    resultMeasureValue: response[index].result_measure_value + response[index].result_measure_unit_code, 
-                    countyCode: response[index].county_code
-                }
-                this.waterData.push(newWaterData); 
-           }
-        });
+        console.log('Water Report Initialized'); 
     }
 
     generateReport(): void { 
-        
+        console.log(this.selectedCounty); 
+        console.log(this.selectedYear); 
+        let whereClause = '?$where=' + 'county_code = \'' + this.selectedCounty + '\'' + ' AND ' + 'date_extract_y(activity_start_date) = ' + this.selectedYear; 
+        this.http.get('https://data.pa.gov/resource/x7jf-72k4.json' + whereClause).subscribe(data => {
+            this.waterData = []; 
+            let response: any; 
+            response = data; 
+            console.log(response); 
+            for(let index = 0; index < response.length; index++) {
+                 var newWaterData: WaterData = {
+                     monitoringLocationName: response[index].monitoring_location_name, 
+                     monitoringLocationDescription: response[index].monitoring_location_description,
+                     monitoringLocationType: response[index].monitoring_location_name, 
+                     longitude: response[index].longitude, 
+                     latitude: response[index].latitude, 
+                     activityType: response[index].activity_type_code, 
+                     activityDate: response[index].activity_start_date, 
+                     resultMethodName: response[index].result_method_name, 
+                     resultMeasureValue: response[index].result_measure_value + response[index].result_measure_unit_code, 
+                     countyCode: response[index].county_code
+                 }
+                 this.waterData.push(newWaterData); 
+            }
+         });
     }
     
     exportReport(): void {
+        let filename = 'WaterQualityReport.csv';
+
+        //Add Input Parameters to CSV Value
+        let finalValue = 'Monitoring Location Name, Monitoring Location Description, Monitoring Location Type, Longitude, Latitude, Activity Type, Activity Date, Result Method Name, Result Measure Value, County Code\n\n'; 
         
+        for(let index = 0; index < this.waterData.length; index++){
+            finalValue += this.waterData[index].monitoringLocationName + ',' + this.waterData[index].monitoringLocationDescription + ',' + this.waterData[index].monitoringLocationType + ',' +
+                this.waterData[index].longitude + ',' + this.waterData[index].latitude + ',' + this.waterData[index].activityType + ',' + this.waterData[index].activityDate + ',' + 
+                this.waterData[index].resultMethodName.replace(/,/g,"") + ',' + this.waterData[index].resultMeasureValue + ',' + this.waterData[index].countyCode + '\n'; 
+        }
+
+        let blob = new Blob([finalValue], { type: 'text/csv;charset-utf-8;' });
+        if (navigator.msSaveBlob) { //IE 10+
+            navigator.msSaveBlob(blob, filename);
+        } else { 
+            let link = document.createElement('a');
+            let myLink = link;
+            if (myLink.download !== undefined) { //feature detection
+                // Browsers that support HTML5 download attribute
+                console.log('Starting Download');
+                let url = URL.createObjectURL(blob);
+                myLink.setAttribute('href', url);
+                myLink.setAttribute('download', filename);
+                myLink.style.visibility = 'hidden';
+                document.body.appendChild(myLink);
+                myLink.click();
+                document.body.removeChild(myLink);
+            }
+        }
     }
 }
