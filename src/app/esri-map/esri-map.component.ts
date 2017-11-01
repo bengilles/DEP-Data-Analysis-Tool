@@ -25,7 +25,7 @@ export class EsriMapComponent {
      url: "//js.arcgis.com/4.5/"
    }).then(() => {
      // load the map class needed to create a new map
-     vm.esriLoader.loadModules(["esri/Basemap", "esri/config", "esri/geometry/Extent", "esri/layers/FeatureLayer", "esri/tasks/support/FeatureSet", "esri/tasks/Geoprocessor", "esri/widgets/LayerList", "esri/widgets/Legend", "esri/Map", "esri/views/MapView", "esri/geometry/Point", "esri/layers/TileLayer"]).then(([BaseMap, esriConfig, Extent, FeatureLayer, FeatureSet, GeoProcessor, LayerList, Legend , Map, MapView, Point, TileLayer]) => {
+     vm.esriLoader.loadModules(["esri/Basemap", "esri/config", "esri/geometry/Extent", "esri/layers/FeatureLayer", "esri/tasks/support/FeatureSet", "esri/tasks/Geoprocessor", "esri/widgets/LayerList", "esri/widgets/Legend", "esri/Map", "esri/views/MapView", "esri/geometry/Point", "esri/geometry/SpatialReference", "esri/layers/TileLayer"]).then(([BaseMap, esriConfig, Extent, FeatureLayer, FeatureSet, GeoProcessor, LayerList, Legend , Map, MapView, Point, SpatialReference, TileLayer]) => {
       
       esriConfig.request.corsEnabledServers.push("https://gisags104.dev.geodecisions.local:6443");
 
@@ -34,20 +34,14 @@ export class EsriMapComponent {
         url: "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/ReturnRadonLevels/GPServer/Return%20Radon%20Levels"
       });
       var radonBaseMapUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/RadonBaseMap/MapServer/";
-      var vectorMapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/VectorData/MapServer/";
       var radon1980MapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/Radon1980/MapServer";
       var radon1990MapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/Radon1990/MapServer";
       var radon2000MapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/Radon2000/MapServer";
       var radon2010MapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/Radon2010/MapServer";
+      var vectorMapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/VectorData/MapServer/";
      
       var radonBaseLayer = new TileLayer({
           url: radonBaseMapUrl
-      });
-
-      var waterDataLayer = new FeatureLayer({
-        title: "Water Quality Data",
-        url: vectorMapServerUrl + "0",
-        visible: false
       });
 
       var radon1980Layer = new TileLayer({
@@ -71,6 +65,12 @@ export class EsriMapComponent {
       var radon2010Layer = new TileLayer({
         title: "Radon Municipality Data (2010-Present)",
         url: radon2010MapServerUrl,
+        visible: false
+      });
+
+      var waterDataLayer = new FeatureLayer({
+        title: "Water Quality Data",
+        url: vectorMapServerUrl + "0",
         visible: false
       });
       
@@ -100,18 +100,15 @@ export class EsriMapComponent {
         }
       });
 
-      vm.map.add(waterDataLayer);
       vm.map.add(radon1980Layer);
       vm.map.add(radon1990Layer);
       vm.map.add(radon2000Layer);
       vm.map.add(radon2010Layer);
+      vm.map.add(waterDataLayer);
 
       var legend = new Legend({
         view: vm.mapView,
         layerInfos: [{
-            layer: waterDataLayer,
-            title: "Water Quality Data"
-          },{
             layer: radon1980Layer,
             title: "Radon Municipality Data (1980-1990)"
           },{
@@ -123,6 +120,9 @@ export class EsriMapComponent {
           },{
             layer: radon2010Layer,
             title: "Radon Municipality Data (2010-Present)"
+          },{
+            layer: waterDataLayer,
+            title: "Water Quality Data"
           }
         ]
       });
