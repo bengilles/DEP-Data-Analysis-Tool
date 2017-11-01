@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { MappingComponent } from './mapping/mapping.component';
 import { EsriMapComponent } from './esri-map/esri-map.component';
 import { WaterReportComponent } from './reports/water-report/water-report.component'; 
+import { RadonReportComponent } from './reports/radon-report/radon-report.component';
 import { EsriLoaderService } from 'angular2-esri-loader';
 import { MappingService } from './services/mapping.service'; 
 
@@ -15,7 +16,8 @@ import { MappingService } from './services/mapping.service';
     AppComponent,
     MappingComponent,
     EsriMapComponent, 
-    WaterReportComponent
+    WaterReportComponent,
+    RadonReportComponent
   ],
   imports: [
     BrowserModule, 

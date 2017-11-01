@@ -19,7 +19,7 @@
             <button class="btn-primary" (click)="exportReport()">Export</button>
         </div>
     </div>
-    <p-dataTable [value]="waterData" [rows]="15" [paginator]="true">
+    <p-dataTable [value]="waterData" selectionMode="single" [(selection)]="selectedRow" [rows]="15" [paginator]="true">
         <p-column field="monitoringLocationName" header="Monitoring Location Name" [sortable]="true"></p-column>
         <p-column field="monitoringLocationDescription" header="Monitoring Location Description" [sortable]="true"></p-column>
         <p-column field="monitoringLocationType" header="Monitoring Location Type" [sortable]="true"></p-column>
