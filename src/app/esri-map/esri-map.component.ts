@@ -31,7 +31,7 @@ export class EsriMapComponent {
 
       var radonDataReturn;
       var geoProcessor = new GeoProcessor({
-        url: "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/ReturnRadonLevels/GPServer/Return%20Radon%20Levels"
+        url: "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/ReturnRadonLevels/GPServer/Return%20Radon%20Levels/execute"
       });
       var radonBaseMapUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/RadonBaseMap/MapServer/";
       var radon1980MapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/Radon1980/MapServer";
