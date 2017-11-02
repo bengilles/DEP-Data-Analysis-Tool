@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataTableModule, SharedModule } from 'primeng/primeng'; 
 import { HttpClient } from '@angular/common/http';
 import { MappingService } from '../../services/mapping.service'; 
+import { EsriLoaderService } from "angular2-esri-loader";
 
 export interface WaterData {
     monitoringLocationName: string; 
@@ -118,10 +119,12 @@ export class WaterReportComponent implements OnInit {
     mapView: any; 
     selectedRow: any; 
     
-    constructor(private http: HttpClient, private mapService: MappingService) {
+    constructor(private http: HttpClient, private mapService: MappingService, private esriLoader: EsriLoaderService) {
         console.log('Water Report Component Initialized');
         this.map = mapService.getMap(); 
         this.mapView = mapService.getMapView(); 
+        console.log(this.map); 
+        console.log(this.mapView)
     }
     
     ngOnInit(): void {
@@ -185,5 +188,33 @@ export class WaterReportComponent implements OnInit {
                 document.body.removeChild(myLink);
             }
         }
+    }
+    
+    handleRowSelect($event): void {
+        let vm = this; 
+        console.log($event); 
+        console.log(vm.selectedRow); 
+        vm.esriLoader.loadModules(['esri/tasks/QueryTask', 'esri/tasks/support/Query', 'esri/geometry/Extent']).then(([QueryTask, Query, Extent]) => {
+            let waterUrl = 'https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/VectorData/MapServer/0';
+            let queryTask = new QueryTask({
+                url: waterUrl
+            });
+            let query = new Query(); 
+            query.returnGeometry = true; 
+            query.outFields = ['*']; 
+            query.where = 'WaterQuality_Monitoring_Locat_1 = \'' + vm.selectedRow.monitoringLocationName + '\''; 
+            queryTask.execute(query).then(function(results){
+                console.log(results);
+                let newExtent = new Extent({
+                    xmax: results.features[0].geometry.x + 1000,
+                    xmin: results.features[0].geometry.x - 1000, 
+                    ymax: results.features[0].geometry.y + 1000,
+                    ymin: results.features[0].geometry.y - 1000, 
+                    spatialReference: {wkid: results.features[0].geometry.spatialReference.wkid}
+                });
+                console.log('here');
+                vm.mapView.extent = newExtent; 
+            });
+        }); 
     }
 }
