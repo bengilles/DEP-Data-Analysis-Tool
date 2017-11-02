@@ -31,8 +31,12 @@ export class EsriMapComponent {
 
       var radonDataReturn;
       var geoProcessor = new GeoProcessor({
-        url: "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/ReturnRadonLevels/GPServer/Return%20Radon%20Levels/"
+        url: "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/ReturnRadonLevels/GPServer/ReturnRadonLevels/"
       });
+
+      geoProcessor.outSpatialReference = {
+        wkid: 102729
+      };
       var radonBaseMapUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/RadonBaseMap/MapServer/";
       var radon1980MapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/Radon1980/MapServer";
       var radon1990MapServerUrl = "https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/Radon1990/MapServer";
@@ -173,31 +177,14 @@ export class EsriMapComponent {
       }
 
       function executeGeoProcessor(point) {
+        var featureSet = new FeatureSet();
+        featureSet.features = [point];
+        featureSet.spatialReference = {
+          wkid: point.spatialReference.wkid
+        };
+
         var params = {
-          InputPoints: {
-            "displayFieldName": "",
-            "fieldAliases": {
-              "OBJECTID": "OBJECTID"
-            },
-            "geometryType": "esriGeometryPoint",
-            "spatialReference": {
-              "wkid": point.spatialReference.wkid,
-              "latestWkid": 2272
-            },
-            "fields": [{
-              "name": "OBJECTID",
-              "type": "esriFieldTypeOID",
-              "alias": "OBJECTID"
-            }],
-            "features":[{
-              "attributes": {
-                "OBJECTID": 1
-              },"geometry": {
-                "x": point.x,
-                "y": point.y
-              }
-            }],
-          }
+          "InputPoints": featureSet
         };
         
 // var params = {"InputPoints": {"displayFieldName":"",
