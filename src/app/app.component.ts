@@ -20,13 +20,15 @@ export class AppComponent {
       this.mapVisible = false;
       this.radonReportVisible = false; 
       this.radonReportText = 'View Radon Report'
-      this.waterReportText = 'Close Water Quality Report';   
+      this.waterReportText = 'Close Water Quality Report';
+      document.getElementById('view').style.height = '660px';    
     } else {
       this.waterReportVisible = false; 
       this.radonReportVisible = false; 
       this.radonReportText = 'View Radon Report'; 
       this.mapVisible = true; 
       this.waterReportText = 'View Water Quality Report';
+      document.getElementById('view').style.height = '860px';  
     }
   }
   
@@ -37,12 +39,14 @@ export class AppComponent {
       this.waterReportText = 'View Water Report';
       this.waterReportVisible = false; 
       this.mapVisible = false; 
+      document.getElementById('view').style.height = '660px';  
     } else {
       this.radonReportVisible = false; 
       this.waterReportVisible = false; 
       this.mapVisible = true; 
       this.waterReportText = 'View Water Report'; 
       this.radonReportText = 'View Radon Report'; 
+      document.getElementById('view').style.height = '860px';  
     }
   }
   

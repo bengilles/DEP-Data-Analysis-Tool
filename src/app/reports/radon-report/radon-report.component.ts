@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataTableModule, SharedModule } from 'primeng/primeng'; 
 import { HttpClient } from '@angular/common/http';
 import { MappingService } from '../../services/mapping.service'; 
+import { EsriLoaderService } from "angular2-esri-loader";
 
 export interface RadonData {
     radonDataIdentifier: string; 
@@ -130,8 +131,9 @@ export class RadonReportComponent implements OnInit {
     specifiedZipcode: string = ''; 
     map: any; 
     mapView: any; 
+    selectedRow: any; 
     
-    constructor(private http: HttpClient, private mappingService: MappingService) {
+    constructor(private http: HttpClient, private mappingService: MappingService, private esriLoader: EsriLoaderService) {
         console.log('Radon Report Component Initialized');
         this.map = mappingService.getMap(); 
         this.mapView = mappingService.getMapView();
@@ -189,12 +191,12 @@ export class RadonReportComponent implements OnInit {
 
         //Add Input Parameters to CSV Value
         let finalValue = 'Radon Data Identifier, Address Postal Code, County Code, County Name, Municipality Name, Building Purpose, Building Type, Building Subtype, Test Floor Level, Test Method Type, Mitigation System,' + 
-         'Measure Value, Test Start Date, Test End Date + \n\n'; 
+         'Measure Value, Test Start Date, Test End Date\n\n'; 
         
         for(let index = 0; index < this.radonData.length; index++){
             finalValue += this.radonData[index].radonDataIdentifier + ',' + this.radonData[index].addressPostalCode + ',' + this.radonData[index].countyCode + ',' +
                 this.radonData[index].countyName + ',' + this.radonData[index].municipalityName + ',' + this.radonData[index].buildingPurpose + ',' + this.radonData[index].buildingType + ',' + 
-                this.radonData[index].buildingSubType + ',' + this.radonData[index].testFloorLevel + ',' + this.radonData[index].testMethodType + + this.radonData[index].mitigationSystem + ',' +
+                this.radonData[index].buildingSubType + ',' + this.radonData[index].testFloorLevel + ',' + this.radonData[index].testMethodType + ',' + this.radonData[index].mitigationSystem + ',' +
                 this.radonData[index].measureValue + ',' + this.radonData[index].testStartDate + ',' + this.radonData[index].testEndDate + '\n'; 
         }
 
@@ -216,5 +218,25 @@ export class RadonReportComponent implements OnInit {
                 document.body.removeChild(myLink);
             }
         }
+    }
+    
+    handleRowSelect($event): void {
+        let vm = this; 
+        console.log($event); 
+        console.log(vm.selectedRow); 
+        vm.esriLoader.loadModules(['esri/tasks/QueryTask', 'esri/tasks/support/Query', 'esri/geometry/Extent']).then(([QueryTask, Query, Extent]) => {
+            let zipcodeUrl = 'https://gisags104.dev.geodecisions.local:6443/arcgis/rest/services/DATAPP/VectorData/MapServer/6';
+            let queryTask = new QueryTask({
+                url: zipcodeUrl
+            });
+            let query = new Query(); 
+            query.returnGeometry = true; 
+            query.outFields = ['*']; 
+            query.where = 'ZCTA5CE10 = \'' + vm.selectedRow.addressPostalCode + '\''; 
+            queryTask.execute(query).then(function(results){
+                console.log(results);
+                vm.mapView.extent = results.features[0].geometry.extent; 
+            });
+        }); 
     }
 }
