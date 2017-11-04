@@ -1,3 +1,64 @@
-<div class="map">
-    <app-mapping></app-mapping>
+<div style="width:1200px;" class="container">
+    <nav class="navbar navbar-default navbar-static-top">
+        <div>
+            <div class="navbar-header">
+                <img src="/PA-RADON-NO-STROKE.PNG" style="height: 32px; margin-top: 8px;" />
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">Home</a></li>
+                    <li class="dropdown"><a (click)="showWaterReport()" target="_blank">{{waterReportText}}</a></li>
+                    <li class="dropdown"><a (click)="showRadonReport()" target="_blank">{{radonReportText}}</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="http://www.dep.pa.gov/Business/RadiationProtection/RadonDivision/Pages/default.aspx" target="_blank">DEP Radon Division</a></li>
+                            <li><a href="https://www.epa.gov/radon" target="_blank">EPA - Radon</a></li>
+                            <li><a href="https://www.cancer.gov/about-cancer/causes-prevention/risk/substances/radon/radon-fact-sheet" target="_blank">Radon and Cancer</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Help</a></li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+        <!--/.container-fluid -->
+    </nav>
+    <div class="map">
+        <app-mapping></app-mapping>
+    </div>
+    <div *ngIf="waterReportVisible">
+        <app-water-report></app-water-report>
+    </div>
+    <div *ngIf="radonReportVisible">
+        <app-radon-report></app-radon-report>
+    </div>
+    <div id="divRadonIdentifyModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Radon Point Data</h4>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        <p id="radonMinText"></p>
+                    </li>
+                    <li>
+                        <p id="radonMedianText"></p>
+                    </li>
+                    <li>
+                        <p id="radonMaxText"></p>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+        
+        </div>
+    </div>
 </div>
